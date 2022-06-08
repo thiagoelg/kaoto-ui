@@ -1,6 +1,7 @@
+import { IStepProps } from '../../types';
 import { IAssociation, IKaotoChannelApi, IKaotoEnvelopeApi } from '../api';
-import { KaotoEnvelopeContext } from './KaotoEnvelopeContext';
-import { KaotoEnvelopeViewApi } from './KaotoEnvelopeView';
+import { IKaotoEnvelopeContext } from './KaotoEnvelopeContext';
+import { IKaotoEnvelopeViewApi } from './KaotoEnvelopeView';
 import { EnvelopeApiFactoryArgs } from '@kie-tools-core/envelope';
 
 /**
@@ -9,13 +10,13 @@ import { EnvelopeApiFactoryArgs } from '@kie-tools-core/envelope';
  * These are the methods that the Channel can call.
  */
 export class KaotoEnvelopeApiImpl implements IKaotoEnvelopeApi {
-  private view: () => KaotoEnvelopeViewApi;
+  private view: () => IKaotoEnvelopeViewApi;
   constructor(
     private readonly args: EnvelopeApiFactoryArgs<
       IKaotoEnvelopeApi,
       IKaotoChannelApi,
-      KaotoEnvelopeViewApi,
-      KaotoEnvelopeContext
+      IKaotoEnvelopeViewApi,
+      IKaotoEnvelopeContext
     >
   ) {}
 
@@ -42,8 +43,8 @@ export class KaotoEnvelopeApiImpl implements IKaotoEnvelopeApi {
   /**
    * Fetches all CRDs from the Kaoto view
    */
-  public async kaoto__fetchCRDs() {
-    return this.view().fetchCRDs();
+  public async kaoto__fetchCRDs(newSteps: IStepProps[], integrationName: string) {
+    return this.view().fetchCRDs(newSteps, integrationName);
   }
 
   /**
@@ -63,15 +64,15 @@ export class KaotoEnvelopeApiImpl implements IKaotoEnvelopeApi {
   /**
    * Fetches all view definitions from the Kaoto view
    */
-  public async kaoto__fetchViewDefinitions() {
-    return this.view().fetchViewDefinitions();
+  public async kaoto__fetchViewDefinitions(data: string | IStepProps[]) {
+    return this.view().fetchViewDefinitions(data);
   }
 
   /**
    * Send a notification to the Kaoto view
    */
-  public async kaoto__notifyKaoto() {
-    return this.view().notifyKaoto();
+  public async kaoto__notifyKaoto(title: string, body?: string, variant?: string) {
+    return this.view().notifyKaoto(title, body, variant);
   }
 
   /**

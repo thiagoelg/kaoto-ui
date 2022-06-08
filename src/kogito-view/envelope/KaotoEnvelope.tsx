@@ -45,6 +45,6 @@ export function init(args: { container: HTMLElement; bus: EnvelopeBus }) {
   // Starts the Envelope application with the provided KaotoEnvelopeApi implementation.
   const context: KaotoEnvelopeContext = {};
   return envelope.start(envelopeViewDelegate, context, {
-    create: (apiFactoryArgs) => new KaotoEnvelopeApiImpl(apiFactoryArgs),
+    create: (apiFactoryArgs: any) => new KaotoEnvelopeApiImpl(apiFactoryArgs),
   });
 }

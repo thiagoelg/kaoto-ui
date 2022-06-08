@@ -1,3 +1,4 @@
+import { IStepProps } from '../../types';
 import { IKaotoApi, IKaotoChannelApi, IKaotoEnvelopeApi } from '../api';
 import { EnvelopeServer } from '@kie-tools-core/envelope-bus/dist/channel';
 import { ContainerType } from '@kie-tools-core/envelope/dist/api';
@@ -50,13 +51,28 @@ export const EmbeddedKaoto = forwardRef<EmbeddedKaotoRef, Props>((props, forward
     (envelopeServer: EnvelopeServer<IKaotoChannelApi, IKaotoEnvelopeApi>): EmbeddedKaotoRef => ({
       envelopeServer,
       fetchCatalogSteps: () => envelopeServer.envelopeApi.requests.kaoto__fetchCatalogSteps(),
-      fetchCRDs: () => envelopeServer.envelopeApi.requests.kaoto__fetchCRDs(),
+      fetchCRDs: (newSteps: IStepProps[], integrationName: string) =>
+        envelopeServer.envelopeApi.requests.kaoto__fetchCRDs(newSteps, integrationName),
       fetchDeployments: () => envelopeServer.envelopeApi.requests.kaoto__fetchDeployments(),
       fetchDSLs: () => envelopeServer.envelopeApi.requests.kaoto__fetchDSLs(),
-      fetchViewDefinitions: () => envelopeServer.envelopeApi.requests.kaoto__fetchViewDefinitions(),
-      notifyKaoto: () => envelopeServer.envelopeApi.requests.kaoto__notifyKaoto(),
-      startDeployment: () => envelopeServer.envelopeApi.requests.kaoto__startDeployment(),
-      stopDeployment: () => envelopeServer.envelopeApi.requests.kaoto__stopDeployment(),
+      fetchViewDefinitions: (data: string | IStepProps[]) =>
+        envelopeServer.envelopeApi.requests.kaoto__fetchViewDefinitions(data),
+      notifyKaoto: (title: string, body?: string, variant?: string) =>
+        envelopeServer.envelopeApi.requests.kaoto__notifyKaoto(title, body, variant),
+      startDeployment: (
+        dsl: string,
+        integration: any,
+        integrationName: string,
+        namespace: string
+      ) =>
+        envelopeServer.envelopeApi.requests.kaoto__startDeployment(
+          dsl,
+          integration,
+          integrationName,
+          namespace
+        ),
+      stopDeployment: (integrationName: string) =>
+        envelopeServer.envelopeApi.requests.kaoto__stopDeployment(integrationName),
     }),
     []
   );
