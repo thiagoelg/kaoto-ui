@@ -19,7 +19,7 @@ export interface IKaotoEnvelopeApi {
   kaoto__stopDeployment: (integrationName: string) => void;
 }
 
-export interface Association {
+export interface IAssociation {
   origin: string;
   envelopeServerId: string;
 }
