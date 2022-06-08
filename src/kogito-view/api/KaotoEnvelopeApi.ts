@@ -4,6 +4,7 @@ import { IStepProps } from '../../types';
  * Methods provided by the Envelope that can be consumed by the Channel.
  */
 export interface IKaotoEnvelopeApi {
+  kaoto__init(association: IAssociation, initArgs: IKaotoInitArgs): Promise<void>;
   kaoto__fetchCatalogSteps: () => void;
   kaoto__fetchCRDs: (newSteps: IStepProps[], integrationName: string) => void;
   kaoto__fetchDeployments: () => void;
@@ -17,6 +18,12 @@ export interface IKaotoEnvelopeApi {
     namespace: string
   ) => void;
   kaoto__stopDeployment: (integrationName: string) => void;
+}
+
+export interface IKaotoInitArgs {
+  steps?: [];
+  views?: [];
+  yaml?: string;
 }
 
 export interface IAssociation {
