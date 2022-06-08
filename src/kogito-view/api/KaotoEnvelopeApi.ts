@@ -3,7 +3,7 @@ import { IStepProps } from '../../types';
 /**
  * Methods provided by the Envelope that can be consumed by the Channel.
  */
-export interface KaotoEnvelopeApi {
+export interface IKaotoEnvelopeApi {
   kaoto__fetchCatalogSteps: () => void;
   kaoto__fetchCRDs: (newSteps: IStepProps[], integrationName: string) => void;
   kaoto__fetchDeployments: () => void;
