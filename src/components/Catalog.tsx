@@ -26,6 +26,12 @@ import {
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { useEffect, useRef, useState } from 'react';
+import create from 'zustand';
+
+const useStore = create((set) => ({
+  catalogData: [],
+  setCatalogData: () => set((state) => state),
+}));
 
 // Shorten a string to less than maxLen characters without truncating words.
 function shorten(str: string, maxLen: number, separator = ' ') {
@@ -36,6 +42,7 @@ function shorten(str: string, maxLen: number, separator = ' ') {
 
 export const Catalog = () => {
   // If the catalog data won't be changing, consider removing this state
+  // const [catalogData, setCatalogData] = useState<IStepProps[]>([]);
   const [catalogData, setCatalogData] = useState<IStepProps[]>([]);
   const [isSelected, setIsSelected] = useState('START');
   const [query, setQuery] = useState(``);
