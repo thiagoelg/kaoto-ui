@@ -1,5 +1,3 @@
-import { SettingsProvider } from '../api';
-import { DeploymentProvider } from '../api';
 // @ts-ignore
 import logo from '../assets/images/logo-kaoto.png';
 import { HeaderTools } from './HeaderTools';
@@ -37,13 +35,9 @@ const AppLayout = ({ children }: IAppLayout) => {
     </SkipToContent>
   );
   return (
-    <SettingsProvider>
-      <DeploymentProvider>
-        <Page mainContainerId={pageId} header={Header} skipToContent={PageSkipToContent}>
-          {children}
-        </Page>
-      </DeploymentProvider>
-    </SettingsProvider>
+    <Page mainContainerId={pageId} header={Header} skipToContent={PageSkipToContent}>
+      {children}
+    </Page>
   );
 };
 
