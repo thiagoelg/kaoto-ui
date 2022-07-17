@@ -1,5 +1,5 @@
-import { IntegrationJsonProvider, IntegrationSourceProvider, SettingsProvider } from '../api';
-import { DeploymentProvider } from '../api/DeploymentProvider';
+import { IntegrationJsonProvider, SettingsProvider } from '../api';
+import { DeploymentProvider } from '../api';
 // @ts-ignore
 import logo from '../assets/images/logo-kaoto.png';
 import { HeaderTools } from './HeaderTools';
@@ -38,15 +38,15 @@ const AppLayout = ({ children }: IAppLayout) => {
   );
   return (
     <IntegrationJsonProvider initialState={{ metadata: { name: '' }, params: [], steps: [] }}>
-      <IntegrationSourceProvider initialState={''}>
-        <SettingsProvider>
-          <DeploymentProvider>
-            <Page mainContainerId={pageId} header={Header} skipToContent={PageSkipToContent}>
-              {children}
-            </Page>
-          </DeploymentProvider>
-        </SettingsProvider>
-      </IntegrationSourceProvider>
+      {/*<IntegrationSourceProvider initialState={''}>*/}
+      <SettingsProvider>
+        <DeploymentProvider>
+          <Page mainContainerId={pageId} header={Header} skipToContent={PageSkipToContent}>
+            {children}
+          </Page>
+        </DeploymentProvider>
+      </SettingsProvider>
+      {/*</IntegrationSourceProvider>*/}
     </IntegrationJsonProvider>
   );
 };

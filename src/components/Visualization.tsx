@@ -1,10 +1,10 @@
 import {
-  useIntegrationSourceContext,
   useIntegrationJsonContext,
   fetchIntegrationSourceCode,
   fetchViews,
   useSettingsContext,
   fetchIntegrationJson,
+  useSourceCodeStore,
 } from '../api';
 import {
   IStepProps,
@@ -46,7 +46,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const [, setReactFlowInstance] = useState(null);
   const reactFlowWrapper = useRef(null);
   const [selectedStep, setSelectedStep] = useState<IStepProps>({ name: '', type: '' });
-  const [source, setSourceCode] = useIntegrationSourceContext();
+  const { sourceCode, setSourceCode } = useSourceCodeStore();
   const [integrationJson, dispatch] = useIntegrationJsonContext();
   const previousIntegrationJson = usePrevious(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
@@ -85,7 +85,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   // checks for changes to settings (e.g. dsl, name, namespace)
   useEffect(() => {
     if (settings === previousSettings) return;
-    fetchIntegrationJson(source, settings.dsl)
+    fetchIntegrationJson(sourceCode, settings.dsl)
       .then((newIntegration) => {
         let tmpInt = newIntegration;
         tmpInt.metadata = { ...newIntegration.metadata, ...settings };
