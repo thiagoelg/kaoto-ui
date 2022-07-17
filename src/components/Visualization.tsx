@@ -19,21 +19,11 @@ import '../utils';
 import { canStepBeReplaced } from '../utils/validationService';
 import { StepErrorBoundary, StepViews, VisualizationSlot, VisualizationStep } from './';
 import './Visualization.css';
+import useStore from './Visualization.store';
 import { AlertVariant, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import ReactFlow, {
-  applyEdgeChanges,
-  applyNodeChanges,
-  Background,
-  Controls,
-  Edge,
-  EdgeChange,
-  MiniMap,
-  Node,
-  NodeChange,
-  ReactFlowProvider,
-} from 'react-flow-renderer';
+import ReactFlow, { Background, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import 'react-flow-renderer/dist/style.css';
 import 'react-flow-renderer/dist/theme-default.css';
 
@@ -50,8 +40,8 @@ const getId = () => `dndnode_${id++}`;
 const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualization) => {
   // `nodes` is an array of UI-specific objects that represent
   // the Integration.Steps model visually, while `edges` connect them
-  const [nodes, setNodes] = useState<Node<IStepProps>[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  // const [nodes, setNodes] = useState<Node<IStepProps>[]>([]);
+  // const [edges, setEdges] = useState<Edge[]>([]);
   const [isPanelExpanded, setIsPanelExpanded] = useState(false);
   const [, setReactFlowInstance] = useState(null);
   const reactFlowWrapper = useRef(null);
@@ -62,6 +52,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const shouldUpdateCodeEditor = useRef(true);
   const [settings] = useSettingsContext();
   const previousSettings = usePrevious(settings);
+  const { nodes, edges, onNodesChange, onEdgesChange } = useStore();
 
   const { addAlert } = useAlert() || {};
 
@@ -70,7 +61,11 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
    * which causes Visualization nodes to all be redrawn
    */
   useEffect(() => {
+    console.log('integration json changed..');
+
     if (previousIntegrationJson === integrationJson) return;
+
+    console.log('not the same, keep going..');
 
     // UPDATE SOURCE CODE EDITOR
     if (shouldUpdateCodeEditor.current) {
@@ -181,6 +176,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     const incrementAmt = 160;
     const stepsAsNodes: any[] = [];
     const stepEdges: any[] = [];
+    console.log('preparing viz steps...');
 
     // if there are no steps or if the first step has a `type`,
     // but it isn't a source,
@@ -196,6 +192,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       let stepEdge: IVizStepPropsEdge = { id: '' };
 
       const vizStepData: IVizStepNodeData = {
+        color: '#4FD1C5',
         connectorType: step.type,
         dsl: settings.dsl,
         handleUpdateViews: handleUpdateViews,
@@ -261,8 +258,8 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       return;
     });
 
-    setEdges(stepEdges);
-    setNodes(stepsAsNodes);
+    onEdgesChange(stepEdges);
+    onNodesChange(stepsAsNodes);
   };
 
   // Delete an integration step
@@ -329,9 +326,8 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     shouldUpdateCodeEditor.current = true;
   };
 
-  const onNodesChange = (changes: NodeChange[]) => setNodes((ns) => applyNodeChanges(changes, ns));
-
-  const onEdgesChange = (changes: EdgeChange[]) => setEdges((es) => applyEdgeChanges(changes, es));
+  // const onNodesChange = (changes: NodeChange[]) => setNodes((ns) => applyNodeChanges(changes, ns));
+  // const onEdgesChange = (changes: EdgeChange[]) => setEdges((es) => applyEdgeChanges(changes, es));
 
   const onExpandPanel = () => {
     //drawerRef.current && drawerRef.current.focus();
