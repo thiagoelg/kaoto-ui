@@ -1,4 +1,5 @@
 import { IIntegration, IStepProps } from '../types';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
 import create from 'zustand';
 
 interface IIntegrationJsonStore {
@@ -58,3 +59,7 @@ export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) 
     return set({ integrationJson: { ...newIntegration } });
   },
 }));
+
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('integrationJsonStore', useIntegrationJsonStore);
+}
