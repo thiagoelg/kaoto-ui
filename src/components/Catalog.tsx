@@ -1,4 +1,4 @@
-import { fetchCatalogSteps, useDeploymentContext, useSettingsContext } from '../api';
+import { fetchCatalogSteps, useDeploymentStore, useSettingsStore } from '../api';
 import { IStepProps } from '../types';
 import { truncateString, usePrevious } from '../utils';
 import './Catalog.css';
@@ -40,10 +40,10 @@ export const Catalog = () => {
   const [catalogData, setCatalogData] = useState<IStepProps[]>([]);
   const [isSelected, setIsSelected] = useState('START');
   const [query, setQuery] = useState(``);
-  const [settings] = useSettingsContext();
+  const { settings } = useSettingsStore();
   const previousDSL = usePrevious(settings.dsl);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [deployment] = useDeploymentContext();
+  const { deployment } = useDeploymentStore();
 
   const { addAlert } = useAlert() || {};
 

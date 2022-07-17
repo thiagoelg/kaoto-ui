@@ -1,8 +1,8 @@
 import {
   fetchIntegrationJson,
   useIntegrationJsonStore,
-  useSettingsContext,
   fetchIntegrationSourceCode,
+  useSettingsStore,
   useSourceCodeStore,
 } from '../api';
 import { IIntegration } from '../types';
@@ -26,7 +26,7 @@ const SourceCodeEditor = (props: ISourceCodeEditor) => {
   const editorRef = useRef<EditorDidMount['editor'] | null>(null);
   const { sourceCode, setSourceCode } = useSourceCodeStore();
   const { integrationJson, updateIntegration } = useIntegrationJsonStore((state) => state);
-  const [settings] = useSettingsContext();
+  const { settings } = useSettingsStore();
   const previousName = usePrevious(settings.name);
 
   useEffect(() => {

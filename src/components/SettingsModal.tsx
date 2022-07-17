@@ -2,7 +2,7 @@ import {
   fetchCompatibleDSLs,
   fetchIntegrationSourceCode,
   useIntegrationJsonStore,
-  useSettingsContext,
+  useSettingsStore,
   useSourceCodeStore,
 } from '../api';
 import { ISettings, IViewProps } from '../types';
@@ -40,7 +40,7 @@ export interface ISettingsModal {
  */
 export const SettingsModal = ({ handleCloseModal, isModalOpen }: ISettingsModal) => {
   const [availableDSLs, setAvailableDSLs] = useState<string[]>([]);
-  const [settings, setSettings] = useSettingsContext();
+  const { settings, setSettings } = useSettingsStore((state) => state);
   const [localSettings, setLocalSettings] = useState<ISettings>(settings);
   const { integrationJson } = useIntegrationJsonStore((state) => state);
   const { setSourceCode } = useSourceCodeStore();

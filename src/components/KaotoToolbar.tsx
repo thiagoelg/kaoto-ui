@@ -1,9 +1,9 @@
 import {
   fetchIntegrationSourceCode,
   startDeployment,
-  useDeploymentContext,
+  useDeploymentStore,
   useIntegrationJsonStore,
-  useSettingsContext,
+  useSettingsStore,
 } from '../api';
 import { IExpanded } from '../pages/Dashboard';
 import { isNameValidCheck } from '../utils/validationService';
@@ -46,12 +46,12 @@ export interface IKaotoToolbar {
 }
 
 export const KaotoToolbar = ({ expanded, handleExpanded }: IKaotoToolbar) => {
-  const [deployment, setDeployment] = useDeploymentContext();
+  const { deployment, setDeploymentCrd } = useDeploymentStore();
   const [kebabIsOpen, setKebabIsOpen] = useState(false);
   const [appMenuIsOpen, setAppMenuIsOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [settings, setSettings] = useSettingsContext();
+  const { settings, setSettings } = useSettingsStore((state) => state);
   const [localName, setLocalName] = useState(settings.name);
   const { integrationJson, deleteIntegration } = useIntegrationJsonStore((state) => state);
   const [nameValidation, setNameValidation] = useState<
@@ -67,7 +67,7 @@ export const KaotoToolbar = ({ expanded, handleExpanded }: IKaotoToolbar) => {
       if (typeof updatedSource === 'string') {
         startDeployment(updatedSource, settings.name, settings.namespace)
           .then((res) => {
-            setDeployment({ ...deployment, crd: res });
+            setDeploymentCrd(res);
 
             addAlert &&
               addAlert({

@@ -1,9 +1,9 @@
 import {
   fetchIntegrationSourceCode,
   fetchViews,
-  useSettingsContext,
   fetchIntegrationJson,
   useIntegrationJsonStore,
+  useSettingsStore,
   useSourceCodeStore,
 } from '../api';
 import {
@@ -51,7 +51,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     useIntegrationJsonStore((state) => state);
   const previousIntegrationJson = usePrevious(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
-  const [settings] = useSettingsContext();
+  const { settings } = useSettingsStore((state) => state);
   const previousSettings = usePrevious(settings);
   const { nodes, edges, onNodesChange, onEdgesChange } = useStore();
 
