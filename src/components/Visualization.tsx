@@ -1,9 +1,9 @@
 import {
-  useIntegrationJsonContext,
   fetchIntegrationSourceCode,
   fetchViews,
   useSettingsContext,
   fetchIntegrationJson,
+  useIntegrationJsonStore,
   useSourceCodeStore,
 } from '../api';
 import {
@@ -47,7 +47,8 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const reactFlowWrapper = useRef(null);
   const [selectedStep, setSelectedStep] = useState<IStepProps>({ name: '', type: '' });
   const { sourceCode, setSourceCode } = useSourceCodeStore();
-  const [integrationJson, dispatch] = useIntegrationJsonContext();
+  const { integrationJson, addStep, deleteStep, replaceStep, updateIntegration } =
+    useIntegrationJsonStore((state) => state);
   const previousIntegrationJson = usePrevious(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
   const [settings] = useSettingsContext();
@@ -89,7 +90,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       .then((newIntegration) => {
         let tmpInt = newIntegration;
         tmpInt.metadata = { ...newIntegration.metadata, ...settings };
-        dispatch({ type: 'UPDATE_INTEGRATION', payload: tmpInt });
+        updateIntegration(tmpInt);
       })
       .catch((err) => {
         console.error(err);
@@ -148,13 +149,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     // Replace step
     if (validation.isValid) {
       // update the steps, the new node will be created automatically
-      dispatch({
-        type: 'REPLACE_STEP',
-        payload: {
-          newStep: step,
-          oldStepIndex: data.index,
-        },
-      });
+      replaceStep(step, data.index);
     } else {
       // the step CANNOT be replaced, the proposed step is invalid
       addAlert &&
@@ -263,7 +258,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   };
 
   // Delete an integration step
-  const deleteStep = () => {
+  const handleDeleteStep = () => {
     if (!selectedStep.UUID) return;
     setIsPanelExpanded(false);
     setSelectedStep({ name: '', type: '' });
@@ -271,7 +266,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     const stepsIndex = findStepIdxWithUUID(selectedStep.UUID, integrationJson.steps);
     // need to rely on useEffect to get up-to-date value
     shouldUpdateCodeEditor.current = true;
-    dispatch({ type: 'DELETE_STEP', payload: { index: stepsIndex } });
+    deleteStep(stepsIndex);
   };
 
   // Close Step View panel
@@ -321,8 +316,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
    * @param selectedStep
    */
   const onSelectNewStep = (selectedStep: IStepProps) => {
-    dispatch({ type: 'ADD_STEP', payload: { newStep: selectedStep } });
-
+    addStep(selectedStep);
     shouldUpdateCodeEditor.current = true;
   };
 
@@ -356,7 +350,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       shouldUpdateCodeEditor.current = true;
 
       // Replace step with new step
-      dispatch({ type: 'REPLACE_STEP', payload: { newStep, oldStepIndex: oldStepIdx } });
+      replaceStep(newStep, oldStepIdx);
     } else {
       return;
     }
@@ -370,7 +364,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
             <StepViews
               step={selectedStep}
               isPanelExpanded={isPanelExpanded}
-              deleteStep={deleteStep}
+              deleteStep={handleDeleteStep}
               onClosePanelClick={onClosePanelClick}
               saveConfig={saveConfig}
               views={views?.filter((view) => view.step === selectedStep.UUID)}

@@ -1,7 +1,7 @@
 import {
   fetchCompatibleDSLs,
   fetchIntegrationSourceCode,
-  useIntegrationJsonContext,
+  useIntegrationJsonStore,
   useSettingsContext,
   useSourceCodeStore,
 } from '../api';
@@ -42,7 +42,7 @@ export const SettingsModal = ({ handleCloseModal, isModalOpen }: ISettingsModal)
   const [availableDSLs, setAvailableDSLs] = useState<string[]>([]);
   const [settings, setSettings] = useSettingsContext();
   const [localSettings, setLocalSettings] = useState<ISettings>(settings);
-  const [integrationJson] = useIntegrationJsonContext();
+  const { integrationJson } = useIntegrationJsonStore((state) => state);
   const { setSourceCode } = useSourceCodeStore();
   const previousIntegrationJson = usePrevious(integrationJson);
   const previousName = usePrevious(localSettings.name);

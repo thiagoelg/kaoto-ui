@@ -2,7 +2,7 @@ import {
   fetchIntegrationSourceCode,
   startDeployment,
   useDeploymentContext,
-  useIntegrationJsonContext,
+  useIntegrationJsonStore,
   useSettingsContext,
 } from '../api';
 import { IExpanded } from '../pages/Dashboard';
@@ -53,7 +53,7 @@ export const KaotoToolbar = ({ expanded, handleExpanded }: IKaotoToolbar) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [settings, setSettings] = useSettingsContext();
   const [localName, setLocalName] = useState(settings.name);
-  const [integrationJson, dispatch] = useIntegrationJsonContext();
+  const { integrationJson, deleteIntegration } = useIntegrationJsonStore((state) => state);
   const [nameValidation, setNameValidation] = useState<
     'default' | 'warning' | 'success' | 'error' | undefined
   >('default');
@@ -335,7 +335,7 @@ export const KaotoToolbar = ({ expanded, handleExpanded }: IKaotoToolbar) => {
           setIsConfirmationModalOpen(false);
         }}
         handleConfirm={() => {
-          dispatch({ type: 'DELETE_INTEGRATION', payload: null });
+          deleteIntegration();
           setSettings({ dsl: 'KameletBinding', name: 'integration', namespace: 'default' });
           setIsConfirmationModalOpen(false);
         }}

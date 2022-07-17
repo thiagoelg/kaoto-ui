@@ -2,7 +2,6 @@ import { IVizStepNodeData } from '../types';
 import { appendableStepTypes } from '../utils/validationService';
 import { MiniCatalog } from './MiniCatalog';
 import './Visualization.css';
-// import useStore from './Visualization.store';
 import { Button, Popover } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Handle, Node, NodeProps, Position, useNodes } from 'react-flow-renderer';
