@@ -4,7 +4,7 @@ import {
   fetchIntegrationJson,
   useIntegrationJsonStore,
   useSettingsStore,
-  useSourceCodeStore,
+  useIntegrationSourceStore,
 } from '../api';
 import {
   IStepProps,
@@ -40,13 +40,11 @@ const getId = () => `dndnode_${id++}`;
 const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualization) => {
   // `nodes` is an array of UI-specific objects that represent
   // the Integration.Steps model visually, while `edges` connect them
-  // const [nodes, setNodes] = useState<Node<IStepProps>[]>([]);
-  // const [edges, setEdges] = useState<Edge[]>([]);
   const [isPanelExpanded, setIsPanelExpanded] = useState(false);
   const [, setReactFlowInstance] = useState(null);
   const reactFlowWrapper = useRef(null);
   const [selectedStep, setSelectedStep] = useState<IStepProps>({ name: '', type: '' });
-  const { sourceCode, setSourceCode } = useSourceCodeStore();
+  const { sourceCode, setSourceCode } = useIntegrationSourceStore();
   const { integrationJson, addStep, deleteStep, replaceStep, updateIntegration } =
     useIntegrationJsonStore((state) => state);
   const previousIntegrationJson = usePrevious(integrationJson);

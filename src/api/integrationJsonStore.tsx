@@ -1,4 +1,7 @@
 import { IIntegration, IStepProps } from '../types';
+import { useDeploymentStore } from './deploymentStore';
+import { useIntegrationSourceStore } from './integrationSourceStore';
+import { useSettingsStore } from './settingsStore';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import create from 'zustand';
 
@@ -62,4 +65,7 @@ export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) 
 
 if (process.env.NODE_ENV === 'development') {
   mountStoreDevtool('integrationJsonStore', useIntegrationJsonStore);
+  mountStoreDevtool('integrationSourceStore', useIntegrationSourceStore);
+  mountStoreDevtool('deploymentStore', useDeploymentStore);
+  mountStoreDevtool('settingsStore', useSettingsStore);
 }
