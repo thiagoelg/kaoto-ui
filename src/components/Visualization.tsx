@@ -5,6 +5,7 @@ import {
   useIntegrationJsonStore,
   useSettingsStore,
   useIntegrationSourceStore,
+  useVisualizationStore,
 } from '../api';
 import {
   IStepProps,
@@ -19,7 +20,6 @@ import '../utils';
 import { canStepBeReplaced } from '../utils/validationService';
 import { StepErrorBoundary, StepViews, VisualizationSlot, VisualizationStep } from './';
 import './Visualization.css';
-import useStore from './Visualization.store';
 import { AlertVariant, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';
 import { useAlert } from '@rhoas/app-services-ui-shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -44,14 +44,19 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const [, setReactFlowInstance] = useState(null);
   const reactFlowWrapper = useRef(null);
   const [selectedStep, setSelectedStep] = useState<IStepProps>({ name: '', type: '' });
-  const { sourceCode, setSourceCode } = useIntegrationSourceStore();
-  const { integrationJson, addStep, deleteStep, replaceStep, updateIntegration } =
-    useIntegrationJsonStore((state) => state);
+  const sourceCode = useIntegrationSourceStore((state) => state.sourceCode);
+  const setSourceCode = useIntegrationSourceStore((state) => state.setSourceCode);
+  const integrationJson = useIntegrationJsonStore((state) => state.integrationJson);
+  const addStep = useIntegrationJsonStore((state) => state.addStep);
+  const deleteStep = useIntegrationJsonStore((state) => state.deleteStep);
+  const replaceStep = useIntegrationJsonStore((state) => state.replaceStep);
+  const updateIntegration = useIntegrationJsonStore((state) => state.updateIntegration);
+  const settings = useSettingsStore((state) => state.settings);
+  const { nodes, edges, onNodesChange, onEdgesChange } = useVisualizationStore();
+
   const previousIntegrationJson = usePrevious(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
-  const { settings } = useSettingsStore((state) => state);
   const previousSettings = usePrevious(settings);
-  const { nodes, edges, onNodesChange, onEdgesChange } = useStore();
 
   const { addAlert } = useAlert() || {};
 
@@ -86,9 +91,10 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     if (settings === previousSettings) return;
     fetchIntegrationJson(sourceCode, settings.dsl)
       .then((newIntegration) => {
-        let tmpInt = newIntegration;
-        tmpInt.metadata = { ...newIntegration.metadata, ...settings };
-        updateIntegration(tmpInt);
+        updateIntegration({
+          ...newIntegration,
+          metadata: { ...settings, ...newIntegration.metadata },
+        });
       })
       .catch((err) => {
         console.error(err);

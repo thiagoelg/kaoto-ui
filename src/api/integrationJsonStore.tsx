@@ -2,6 +2,7 @@ import { IIntegration, IStepProps } from '../types';
 import { useDeploymentStore } from './deploymentStore';
 import { useIntegrationSourceStore } from './integrationSourceStore';
 import { useSettingsStore } from './settingsStore';
+import { useVisualizationStore } from './visualizationStore';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import create from 'zustand';
 
@@ -37,7 +38,15 @@ function regenerateUuids(steps: IStepProps[]) {
 export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) => ({
   integrationJson: initialIntegration,
   addStep: (newStep) =>
-    set((state) => ({ ...state, steps: [...state.integrationJson.steps, newStep] })),
+    set((state) => {
+      console.log('integrationJson state has changed..', state);
+      return {
+        integrationJson: {
+          ...state.integrationJson,
+          steps: [...state.integrationJson.steps, newStep],
+        },
+      };
+    }),
   deleteIntegration: () => set({ integrationJson: initialIntegration }),
   deleteStep: (stepId) =>
     set((state) => ({
@@ -68,4 +77,5 @@ if (process.env.NODE_ENV === 'development') {
   mountStoreDevtool('integrationSourceStore', useIntegrationSourceStore);
   mountStoreDevtool('deploymentStore', useDeploymentStore);
   mountStoreDevtool('settingsStore', useSettingsStore);
+  mountStoreDevtool('visualizationStore', useVisualizationStore);
 }

@@ -27,29 +27,29 @@ export type RFState = {
 };
 
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
-const useStore = create<RFState>((set, get) => ({
+export const useVisualizationStore = create<RFState>((set) => ({
   nodes: [],
   edges: [],
   onNodesChange: (changes: NodeChange[]) => {
     console.log('nodes changed.. ', changes);
-    set({
-      nodes: applyNodeChanges(changes, get().nodes),
-    });
+    set((state) => ({
+      nodes: applyNodeChanges(changes, state.nodes),
+    }));
   },
   onEdgesChange: (changes: EdgeChange[]) => {
     console.log('edge change.. ', changes);
-    set({
-      edges: applyEdgeChanges(changes, get().edges),
-    });
+    set((state) => ({
+      edges: applyEdgeChanges(changes, state.edges),
+    }));
   },
   onConnect: (connection: Connection) => {
-    set({
-      edges: addEdge(connection, get().edges),
-    });
+    set((state) => ({
+      edges: addEdge(connection, state.edges),
+    }));
   },
   updateNodeColor: (nodeId: string, color: string) => {
-    set({
-      nodes: get().nodes.map((node) => {
+    set((state) => ({
+      nodes: state.nodes.map((node) => {
         if (node.id === nodeId) {
           // it's important to create a new object here, to inform React Flow about the changes
           node.data = { ...node.data, color };
@@ -57,8 +57,6 @@ const useStore = create<RFState>((set, get) => ({
 
         return node;
       }),
-    });
+    }));
   },
 }));
-
-export default useStore;
