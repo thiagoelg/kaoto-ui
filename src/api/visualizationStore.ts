@@ -26,6 +26,11 @@ export type RFState = {
   updateNodeColor: (nodeId: string, color: string) => void;
 };
 
+/**
+ * NOT USING THIS FOR NOW, PUTTING EVERYTHING IN
+ * INTEGRATION JSON STORE FOR TESTING PURPOSES!
+ */
+
 // this is our useStore hook that we can use in our components to get parts of the store and call actions
 export const useVisualizationStore = create<RFState>((set) => ({
   nodes: [],

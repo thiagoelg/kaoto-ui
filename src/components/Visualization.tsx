@@ -5,7 +5,6 @@ import {
   useIntegrationJsonStore,
   useSettingsStore,
   useIntegrationSourceStore,
-  useVisualizationStore,
 } from '../api';
 import {
   IStepProps,
@@ -52,7 +51,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const replaceStep = useIntegrationJsonStore((state) => state.replaceStep);
   const updateIntegration = useIntegrationJsonStore((state) => state.updateIntegration);
   const settings = useSettingsStore((state) => state.settings);
-  const { nodes, edges, onNodesChange, onEdgesChange } = useVisualizationStore();
+  const { nodes, edges, onNodesChange, onEdgesChange } = useIntegrationJsonStore();
 
   const previousIntegrationJson = usePrevious(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
