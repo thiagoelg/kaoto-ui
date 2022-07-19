@@ -6,14 +6,7 @@ import {
   useSettingsStore,
   useIntegrationSourceStore,
 } from '../api';
-import {
-  IStepProps,
-  IViewData,
-  IVizStepNodeData,
-  IVizStepPropsNode,
-  IVizStepPropsEdge,
-  IViewProps,
-} from '../types';
+import { IStepProps, IViewData, IVizStepPropsNode, IVizStepPropsEdge, IViewProps } from '../types';
 import { findStepIdxWithUUID, truncateString, usePrevious } from '../utils';
 import '../utils';
 import { canStepBeReplaced } from '../utils/validationService';
@@ -51,9 +44,14 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   const replaceStep = useIntegrationJsonStore((state) => state.replaceStep);
   const updateIntegration = useIntegrationJsonStore((state) => state.updateIntegration);
   const settings = useSettingsStore((state) => state.settings);
-  const { nodes, edges, onNodesChange, onEdgesChange } = useIntegrationJsonStore();
+  const nodes = useIntegrationJsonStore((state) => state.nodes);
+  const edges = useIntegrationJsonStore((state) => state.edges);
+  const onNodesChange = useIntegrationJsonStore((state) => state.onNodesChange);
+  const onEdgesChange = useIntegrationJsonStore((state) => state.onEdgesChange);
+  const updateEdges = useIntegrationJsonStore((state) => state.updateEdges);
+  const updateNodes = useIntegrationJsonStore((state) => state.updateNodes);
 
-  const previousIntegrationJson = usePrevious(integrationJson);
+  const previousIntegrationJson = useRef(integrationJson);
   const shouldUpdateCodeEditor = useRef(true);
   const previousSettings = usePrevious(settings);
 
@@ -66,7 +64,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
   useEffect(() => {
     console.log('integration json changed..');
 
-    if (previousIntegrationJson === integrationJson) return;
+    if (previousIntegrationJson.current === integrationJson) return;
 
     console.log('not the same, keep going..');
 
@@ -83,6 +81,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
 
     // PREPARE VISUALIZATION DATA
     prepareAndSetVizDataSteps(integrationJson.steps);
+    previousIntegrationJson.current = integrationJson;
   }, [integrationJson]);
 
   // checks for changes to settings (e.g. dsl, name, namespace)
@@ -164,11 +163,13 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     }
   };
 
+  // const isSlot = () => {};
+  // const isFirstStep = () => {};
+
   /**
    * Creates an object for the Visualization from the Step model.
    * Contains UI-specific metadata (e.g. position).
    * Data is stored in the Elements hook.
-   * @param steps
    */
   const prepareAndSetVizDataSteps = (steps: IStepProps[]) => {
     const incrementAmt = 160;
@@ -177,8 +178,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     console.log('preparing viz steps...');
 
     // if there are no steps or if the first step has a `type`,
-    // but it isn't a source,
-    // create a dummy placeholder step
+    // but it isn't a source, create a dummy placeholder step
     if (steps.length === 0 || (steps.length > 0 && steps[0].type && steps[0].type !== 'START')) {
       // @ts-ignore
       steps.unshift({ name: 'ADD A STEP' });
@@ -189,23 +189,21 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       const previousStep = stepsAsNodes[index - 1];
       let stepEdge: IVizStepPropsEdge = { id: '' };
 
-      const vizStepData: IVizStepNodeData = {
-        color: '#4FD1C5',
-        connectorType: step.type,
-        dsl: settings.dsl,
-        handleUpdateViews: handleUpdateViews,
-        icon: step.icon,
-        index: index,
-        kind: step.kind,
-        label: truncateString(step.name, 14),
-        onDropChange: onDropChange,
-        onMiniCatalogClickAdd: onSelectNewStep,
-        UUID: step.UUID,
-      };
-
       // Build the default parameters
       let inputStep: IVizStepPropsNode = {
-        data: vizStepData,
+        data: {
+          color: '#4FD1C5',
+          connectorType: step.type,
+          dsl: settings.dsl,
+          handleUpdateViews: handleUpdateViews,
+          icon: step.icon,
+          index: index,
+          kind: step.kind,
+          label: truncateString(step.name, 14),
+          onDropChange: onDropChange,
+          onMiniCatalogClickAdd: onSelectNewStep,
+          UUID: step.UUID,
+        },
         id: getId(),
         position: { x: 0, y: 250 },
         type: 'step',
@@ -256,8 +254,10 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       return;
     });
 
-    onEdgesChange(stepEdges);
-    onNodesChange(stepsAsNodes);
+    // onEdgesChange(stepEdges);
+    // onNodesChange(stepsAsNodes);
+    updateEdges(stepEdges);
+    updateNodes(stepsAsNodes);
   };
 
   // Delete an integration step
@@ -322,9 +322,6 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     addStep(selectedStep);
     shouldUpdateCodeEditor.current = true;
   };
-
-  // const onNodesChange = (changes: NodeChange[]) => setNodes((ns) => applyNodeChanges(changes, ns));
-  // const onEdgesChange = (changes: EdgeChange[]) => setEdges((es) => applyEdgeChanges(changes, es));
 
   const onExpandPanel = () => {
     //drawerRef.current && drawerRef.current.focus();
