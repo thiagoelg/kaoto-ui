@@ -1,8 +1,8 @@
-import { IIntegration, IStepProps } from '../types';
+import { IIntegration, IStepProps, IVizStepPropsNode } from '../types';
 import { useDeploymentStore } from './deploymentStore';
 import { useIntegrationSourceStore } from './integrationSourceStore';
 import { useSettingsStore } from './settingsStore';
-import { NodeData, useVisualizationStore } from './visualizationStore';
+import { useVisualizationStore } from './visualizationStore';
 import {
   addEdge,
   applyEdgeChanges,
@@ -10,7 +10,6 @@ import {
   Connection,
   Edge,
   EdgeChange,
-  Node,
   NodeChange,
   OnConnect,
   OnEdgesChange,
@@ -20,21 +19,21 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import create from 'zustand';
 
 interface IIntegrationJsonStore {
-  addNode: (node: Node<NodeData>) => void;
+  addNode: (node: IVizStepPropsNode) => void;
   addStep: (newStep: IStepProps) => void;
   deleteIntegration: () => void;
   deleteStep: (index: number) => void;
   edges: Edge[];
+  // init: (onDropChange: () => void, onMiniCatalogClickAdd: () => void) => void;
   integrationJson: IIntegration;
-  nodes: Node<NodeData>[];
+  nodes: IVizStepPropsNode[];
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   onNodesChange: OnNodesChange;
   updateEdges: (newEdges: Edge[]) => void;
   updateIntegration: (newInt?: any) => void;
   updateNode: (nodeId: string, text: string) => void;
-  updateNodes: (newNodes: Node<NodeData>[]) => void;
-  updateNodeColor: (nodeId: string, color: string) => void;
+  updateNodes: (newNodes: IVizStepPropsNode[]) => void;
   replaceStep: (newStep: IStepProps, oldStepIndex: number) => void;
 }
 
@@ -62,7 +61,7 @@ export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) 
   integrationJson: initialIntegration,
   nodes: [],
   edges: [],
-  addNode(node: Node<NodeData>) {
+  addNode(node: IVizStepPropsNode) {
     set({
       nodes: [...get().nodes, node],
     });
@@ -105,9 +104,6 @@ export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) 
   replaceStep: (newStep, oldStepIndex) => {
     let newSteps = get().integrationJson.steps.slice();
     newSteps[oldStepIndex] = newStep;
-    console.log('newStep: ', newStep);
-    console.log('oldStepIndex: ', oldStepIndex);
-    console.table(newSteps);
     return set((state) => ({
       integrationJson: {
         ...state.integrationJson,
@@ -134,19 +130,7 @@ export const useIntegrationJsonStore = create<IIntegrationJsonStore>((set, get) 
       }),
     });
   },
-  updateNodeColor: (nodeId: string, color: string) => {
-    set((state) => ({
-      nodes: state.nodes.map((node) => {
-        if (node.id === nodeId) {
-          // it's important to create a new object here, to inform React Flow about the changes
-          node.data = { ...node.data, color };
-        }
-
-        return node;
-      }),
-    }));
-  },
-  updateNodes: (newNodes: Node<NodeData>[]) =>
+  updateNodes: (newNodes: IVizStepPropsNode[]) =>
     set((state) => ({
       nodes: [...state.nodes, ...newNodes],
     })),

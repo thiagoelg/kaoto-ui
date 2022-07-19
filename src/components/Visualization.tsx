@@ -57,6 +57,10 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
 
   const { addAlert } = useAlert() || {};
 
+  // on change to integrationJson steps,
+  // check if value is the same, otherwise
+  // for each create a new node
+
   /**
    * Check for changes to integrationJson,
    * which causes Visualization nodes to all be redrawn
@@ -133,36 +137,6 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
 
   const nodeTypes = useMemo(() => ({ slot: VisualizationSlot, step: VisualizationStep }), []);
 
-  /**
-   * Handles dropping a step onto an existing step (i.e. step replacement)
-   * @param event
-   * @param data
-   */
-  const onDropChange = (
-    event: { preventDefault: () => void; dataTransfer: { getData: (arg0: string) => any } },
-    data: any
-  ) => {
-    event.preventDefault();
-
-    const dataJSON = event.dataTransfer.getData('text');
-    const step: IStepProps = JSON.parse(dataJSON);
-    const validation = canStepBeReplaced(data, step, integrationJson.steps);
-
-    // Replace step
-    if (validation.isValid) {
-      // update the steps, the new node will be created automatically
-      replaceStep(step, data.index);
-    } else {
-      // the step CANNOT be replaced, the proposed step is invalid
-      addAlert &&
-        addAlert({
-          title: 'Replace Step Unsuccessful',
-          variant: AlertVariant.danger,
-          description: validation.message ?? 'Something went wrong, please try again later.',
-        });
-    }
-  };
-
   // const isSlot = () => {};
   // const isFirstStep = () => {};
 
@@ -179,10 +153,26 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
 
     // if there are no steps or if the first step has a `type`,
     // but it isn't a source, create a dummy placeholder step
-    if (steps.length === 0 || (steps.length > 0 && steps[0].type && steps[0].type !== 'START')) {
+    if (steps.length === 0) {
       // @ts-ignore
-      steps.unshift({ name: 'ADD A STEP' });
+      stepsAsNodes.push({
+        data: { label: 'ADD A STEP', index: 0, type: 'START' },
+        id: getId(),
+        position: { x: 200, y: 250 },
+        type: 'step',
+      });
     }
+
+    const calculatePosition = (index: number) => {
+      if (index === 0) {
+        return { x: window.innerWidth / 2 - incrementAmt - 80, y: 0 };
+      }
+      if (index === steps.length - 1) {
+        // Grab the previous step to use for determining position and drawing edges
+        return { x: stepsAsNodes[index - 1].position?.x + incrementAmt, y: 0 };
+      }
+      return { x: stepsAsNodes[index - 1].position?.x + incrementAmt, y: 0 };
+    };
 
     steps.map((step, index) => {
       // Grab the previous step to use for determining position and drawing edges
@@ -192,20 +182,13 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       // Build the default parameters
       let inputStep: IVizStepPropsNode = {
         data: {
-          color: '#4FD1C5',
-          connectorType: step.type,
-          dsl: settings.dsl,
-          handleUpdateViews: handleUpdateViews,
-          icon: step.icon,
           index: index,
-          kind: step.kind,
-          label: truncateString(step.name, 14),
-          onDropChange: onDropChange,
-          onMiniCatalogClickAdd: onSelectNewStep,
+          label: step.name,
+          step,
           UUID: step.UUID,
         },
         id: getId(),
-        position: { x: 0, y: 250 },
+        position: calculatePosition(index),
         type: 'step',
       };
 
@@ -219,31 +202,6 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
         stepEdge.target = inputStep.id;
       }
 
-      // determine position of Step, add properties
-      switch (index) {
-        case 0:
-          // first item in `steps` array
-          inputStep.position.x = window.innerWidth / 2 - incrementAmt - 80;
-          // mark as a slot if it's first in the array and not a START step
-          if (steps.length > 0 && steps[0].type !== 'START') {
-            inputStep.type = 'slot';
-          }
-          inputStep.data.connectorType = 'START';
-          break;
-        case steps.length - 1:
-          // Last item in `steps` array
-          inputStep.position.x = previousStep.position?.x + incrementAmt;
-
-          // Build edges
-          stepEdge.animated = true;
-          stepEdge.style = { stroke: 'red' };
-          break;
-        default:
-          // Middle steps in `steps` array
-          inputStep.position.x = previousStep.position?.x + incrementAmt;
-          break;
-      }
-
       stepsAsNodes.push(inputStep);
 
       // only add step edge if there is more than one step and not on the first step
@@ -254,10 +212,10 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
       return;
     });
 
-    // onEdgesChange(stepEdges);
-    // onNodesChange(stepsAsNodes);
-    updateEdges(stepEdges);
-    updateNodes(stepsAsNodes);
+    onEdgesChange(stepEdges);
+    onNodesChange(stepsAsNodes);
+    // updateEdges(stepEdges);
+    // updateNodes(stepsAsNodes);
   };
 
   // Delete an integration step
@@ -298,7 +256,7 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
     // here we check if it's a node or edge
     // workaround for https://github.com/wbkd/react-flow/issues/2202
     if (!_e.target.classList.contains('stepNode__clickable')) return;
-    if (node.type === 'slot') {
+    if (!node.step) {
       // prevent slots from being selected,
       // passive-aggressively open the steps catalog
       if (toggleCatalog) toggleCatalog();
@@ -312,15 +270,6 @@ const Visualization = ({ handleUpdateViews, toggleCatalog, views }: IVisualizati
 
     // show/hide the panel regardless
     if (!isPanelExpanded) setIsPanelExpanded(true);
-  };
-
-  /**
-   * Handles selecting a step from the Mini Catalog (append step)
-   * @param selectedStep
-   */
-  const onSelectNewStep = (selectedStep: IStepProps) => {
-    addStep(selectedStep);
-    shouldUpdateCodeEditor.current = true;
   };
 
   const onExpandPanel = () => {

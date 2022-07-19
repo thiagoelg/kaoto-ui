@@ -51,12 +51,12 @@ export function canStepBeReplaced(
   // initial shallow check of step type, where the
   // existing step is treated as a first class citizen,
   // regardless if it's a slot or not
-  if (existingStep.connectorType === proposedStep.type) {
+  if ((existingStep.type || existingStep.step?.type) === proposedStep.type) {
     isValid = true;
     return { isValid, message: '' };
   }
 
-  switch (existingStep.connectorType) {
+  switch (existingStep.step?.type) {
     case 'START':
       isValid = proposedStep.type === 'START';
       message = 'First step must be a start step.';
