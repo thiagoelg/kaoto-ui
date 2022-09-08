@@ -1,26 +1,28 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "esModuleInterop": true,
-    "importHelpers": true,
-    "jsx": "react-jsx",
-    "lib": ["dom", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "dist",
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6",
+    "declarationDir": "src/@kaoto",
+    "isolatedModules": true,
+    "emitDeclarationOnly": true,
+    "typeRoots": [
+      "./src/@kaoto/**"
+    ],
+    "umdNamedDefine": true
   },
+  "include": ["./src/@kaoto", "./src/index.tsx"],
   "exclude": [
+    ".storybook",
+    ".yarn",
+    "coverage",
+    "cypress",
     "dist",
+    "nginx",
     "node_modules",
+    "public",
     "**/*.stories.tsx",
-    "**/*.test.ts*",
+    "**/*.test.ts*"
   ]
 }

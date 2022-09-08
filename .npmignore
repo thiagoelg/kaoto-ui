@@ -1,0 +1,14 @@
+.eslintignore
+.eslintrc.js
+.github
+.idea
+.mailmap
+.storybook
+.yarn
+coverage
+cypress
+cypress.config.ts
+nginx
+src/___mocks__
+
+

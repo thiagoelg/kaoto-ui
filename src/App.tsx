@@ -12,7 +12,7 @@ import '@patternfly/patternfly/utilities/Spacing/spacing.css';
 import { Suspense } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-export const App = () => {
+export const Kaoto = () => {
   return (
     <AlertProvider>
       <Router>
@@ -26,4 +26,4 @@ export const App = () => {
   );
 };
 
-export default App;
+export default { Kaoto };

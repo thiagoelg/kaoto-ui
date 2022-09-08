@@ -9,6 +9,30 @@ declare global {
   const __webpack_share_scopes__: any;
 }
 
+/**
+ * The API for extending Kaoto, typically via
+ * a Generic or Step Extension
+ */
+export interface KaotoApi {
+  getDeployment: (name: string, namespace?: string) => Promise<string | unknown>;
+  getIntegrationSource: (
+    integration: IIntegration,
+    dsl: string,
+    namespace?: string
+  ) => Promise<string | unknown>;
+  notifyKaoto: (title: string, body?: string, variant?: string) => void;
+  startDeployment: (
+    integration: any,
+    name: string,
+    namespace?: string
+  ) => Promise<string | unknown>;
+  step: IStepProps;
+  stepParams: { [p: string]: any };
+  stopDeployment: (name: string, namespace?: string) => void;
+  updateStep: (step: IStepProps) => void;
+  updateStepParams: (newValues: { [s: string]: unknown } | ArrayLike<unknown>) => void;
+}
+
 export interface IDeployment {
   // yaml CRD of deployment
   crd?: string;
@@ -58,30 +82,6 @@ export interface ISettings {
   name: string;
   // Cluster namespace
   namespace: string;
-}
-
-/**
- * The API for extending Kaoto, typically via
- * a Generic or Step Extension
- */
-export interface IKaotoApi {
-  getDeployment: (name: string, namespace?: string) => Promise<string | unknown>;
-  getIntegrationSource: (
-    integration: IIntegration,
-    dsl: string,
-    namespace?: string
-  ) => Promise<string | unknown>;
-  notifyKaoto: (title: string, body?: string, variant?: string) => void;
-  startDeployment: (
-    integration: any,
-    name: string,
-    namespace?: string
-  ) => Promise<string | unknown>;
-  step: IStepProps;
-  stepParams: { [p: string]: any };
-  stopDeployment: (name: string, namespace?: string) => void;
-  updateStep: (step: IStepProps) => void;
-  updateStepParams: (newValues: { [s: string]: unknown } | ArrayLike<unknown>) => void;
 }
 
 export interface IStepProps {

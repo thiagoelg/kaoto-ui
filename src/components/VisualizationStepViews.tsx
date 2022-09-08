@@ -10,7 +10,7 @@ import { Extension } from './Extension';
 import { JsonSchemaConfigurator } from './JsonSchemaConfigurator';
 import { StepErrorBoundary } from './StepErrorBoundary';
 import { dynamicImport } from './import';
-import { IIntegration, IKaotoApi, IStepProps } from '@kaoto';
+import { IIntegration, KaotoApi, IStepProps } from '@kaoto';
 import {
   AlertVariant,
   Button,
@@ -171,7 +171,7 @@ const VisualizationStepViews = ({
                 tmpValues[paramKey] = p.value ?? p.defaultValue;
               });
 
-              const kaotoApi: IKaotoApi = {
+              const kaotoApi: KaotoApi = {
                 getDeployment: (name: string, namespace?: string): Promise<string | unknown> => {
                   return fetchDeployment(name, namespace).then((deployment: string | unknown) => {
                     return deployment;
