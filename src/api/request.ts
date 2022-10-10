@@ -89,3 +89,7 @@ export default {
   // patch: (options: IFetch) => api({ method: 'PATCH', ...options }),
   delete: (options: IFetch) => api({ method: 'DELETE', ...options }),
 };
+
+export function setApiUrl(url: string) {
+  apiURL = url;
+}

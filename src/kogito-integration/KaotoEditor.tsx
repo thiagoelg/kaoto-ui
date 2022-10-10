@@ -1,12 +1,16 @@
 import "./KaotoEditor.css";
-import { Suspense, forwardRef, useState, useCallback, useImperativeHandle, useRef } from "react";
+import { Suspense, forwardRef, useState, useCallback, useImperativeHandle, useRef, useEffect } from "react";
 import { HashRouter as Router } from "react-router-dom";
 import { WorkspaceEdit } from "@kie-tools-core/workspace/dist/api";
 import { Notification } from "@kie-tools-core/notifications/dist/api";
+import { MessageBusClientApi } from "@kie-tools-core/envelope-bus/dist/api";
+import { useSharedValue } from "@kie-tools-core/envelope-bus/dist/hooks";
 import { ChannelType, EditorApi, StateControlCommand } from "@kie-tools-core/editor/dist/api";
 import { AlertProvider, MASLoading, AppLayout } from "@kaoto/layout";
 import { AppRoutes } from "@kaoto/routes";
 import { KaotoIntegrationProviderRef, KogitoEditorIntegrationProvider, ContentOperation } from "./KogitoEditorIntegrationProvider";
+import { KaotoEditorChannelApi } from "./api";
+import { setApiUrl } from "@kaoto/api";
 
 interface Props {
   /**
@@ -40,6 +44,11 @@ interface Props {
    * ChannelType where the component is running.
    */
   channelType: ChannelType;
+
+  /**
+   * Channel API
+   */
+  channelApi: MessageBusClientApi<KaotoEditorChannelApi> 
 }
 
 export const KaotoEditor = forwardRef<EditorApi, Props>((props, forwardedRef) => {
@@ -98,6 +107,12 @@ export const KaotoEditor = forwardRef<EditorApi, Props>((props, forwardedRef) =>
       setTheme: () => Promise.resolve(),
     };
   });
+
+  const [settings] = useSharedValue(props.channelApi.shared.kogitoKaotoEditor__settings);
+
+  useEffect(() => {
+    settings?.apiUrl && setApiUrl(settings.apiUrl);
+  }, [settings]);
 
   return (
     <>

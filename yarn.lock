@@ -848,7 +848,7 @@
     react "^17.0.2"
     react-dom "^17.0.2"
 
-"@kie-tools-core/envelope-bus@0.23.0":
+"@kie-tools-core/envelope-bus@0.23.0", "@kie-tools-core/envelope-bus@^0.23.0":
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/@kie-tools-core/envelope-bus/-/envelope-bus-0.23.0.tgz#d7c3cab352fa40d8f997bde225624498cb990e1c"
   integrity sha512-o1AKaX+5ODgbU1FIaODWwmc/hTy7ECuwaXu7D9KslkJU2eXMLvUzngA3BLo3x4AH4WIY1rcko5Tvxw6/xTPeTw==

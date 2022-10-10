@@ -1,6 +1,6 @@
 {
-  "name": "kaoto-ui",
-  "version": "0.3.1",
+  "name": "@thiagoelg/kaoto-ui",
+  "version": "0.3.1-rc17",
   "private": false,
   "federatedModuleName": "kaoto",
   "engines": {
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@kie-tools-core/editor": "0.23.0",
+    "@kie-tools-core/envelope-bus": "^0.23.0",
     "@kie-tools-core/guided-tour": "0.23.0",
     "@kie-tools-core/monaco-editor": "0.23.0",
     "@kie-tools-core/notifications": "0.23.0",
